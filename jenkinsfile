@@ -5,7 +5,7 @@ String version = env.BUILD_NUMBER
 println "Pipeline Version='${version}'"
 
 
-/* ARTIFACTORY CONFIGURATION */
+/* ARTIFACTORY CONFIGURATION 
 def buildInfo = Artifactory.newBuildInfo()
 buildInfo.env.capture = true
 def server = Artifactory.server 'artifactory-server'
@@ -13,7 +13,7 @@ rtMaven = Artifactory.newMavenBuild()
 rtMaven.tool = 'M3' // Tool name from Jenkins configuration
 rtMaven.deployer releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local', server: server
 rtMaven.resolver releaseRepo: 'libs-releases', snapshotRepo: 'libs-snapshot', server: server
-
+*/
 
 println "JOB_NAME=${env.JOB_NAME}"
 
@@ -30,9 +30,10 @@ pipeline {
                     sh "mvn clean package -P presentationTooling -D presentation.mode=normal -P autoInstallPackage -P autoInstallContent -Daem.host.protocol=http -Daem.host=localhost -Daem.port=4502 -Dsling.user=\"\${AEM_USER}\" -Dsling.password=\"\${AEM_PASSWORD}\""
                 }*/
 
-                script {
+                /*script {
                     rtMaven.run pom: 'pom.xml', goals: 'clean test'
-                }
+                }*/
+                aemBuild
             }
 
         }
