@@ -1,0 +1,40 @@
+#!groovy
+
+
+String version = env.BUILD_NUMBER
+println "Pipeline Version='${version}'"
+
+
+/* ARTIFACTORY CONFIGURATION */
+def buildInfo = Artifactory.newBuildInfo()
+buildInfo.env.capture = true
+def server = Artifactory.server 'artifactory-server'
+rtMaven = Artifactory.newMavenBuild()
+rtMaven.tool = 'apache-maven-3.3.9' // Tool name from Jenkins configuration
+rtMaven.deployer releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local', server: server
+rtMaven.resolver releaseRepo: 'libs-releases', snapshotRepo: 'libs-snapshot', server: server
+
+
+println "JOB_NAME=${env.JOB_NAME}"
+
+pipeline {
+    agent { label 'linux' }
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '30'))
+        timeout(time: 3, unit: 'DAYS')
+    }
+    stages {
+        stage('DEV') {
+            steps {
+                /*withMaven(maven: 'apache-maven-3.3.9', globalMavenSettingsConfig: 'a4511c59-8ad2-4dde-ad4b-29a7f99a4c55') {
+                    sh "mvn clean package -P presentationTooling -D presentation.mode=normal -P autoInstallPackage -P autoInstallContent -Daem.host.protocol=http -Daem.host=localhost -Daem.port=4502 -Dsling.user=\"\${AEM_USER}\" -Dsling.password=\"\${AEM_PASSWORD}\""
+                }*/
+
+                script {
+                    rtMaven.run pom: 'pom.xml', goals: 'clean package'
+                }
+            }
+
+        }
+    }
+}
