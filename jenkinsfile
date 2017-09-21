@@ -18,7 +18,7 @@ rtMaven.resolver releaseRepo: 'libs-releases', snapshotRepo: 'libs-snapshot', se
 println "JOB_NAME=${env.JOB_NAME}"
 
 pipeline {
-    agent { label 'maven' }
+    agent any
     options {
         buildDiscarder(logRotator(numToKeepStr: '30'))
         timeout(time: 3, unit: 'DAYS')
