@@ -1,5 +1,5 @@
 #!groovy
-
+@Library('test')
 
 String version = env.BUILD_NUMBER
 println "Pipeline Version='${version}'"
